@@ -120,6 +120,11 @@ public class ReachingDefs {
                 reachIn.put(nLabel, defsFromPredecessors);
 
                 // TODO: Compute reach out!
+                Set<Def> reachInWithKill = new HashSet<>(reachIn.get(nLabel));
+                reachInWithKill.removeAll(kills.get(nLabel));
+                Set<Def> newReachOut = new HashSet<>(gen.get(nLabel));
+                newReachOut.addAll(reachInWithKill);
+                reachOut.put(nLabel, newReachOut);
             }
 
         } while (!reachIn.equals(oldReachIn) || !reachOut.equals(oldReachOut));
@@ -219,7 +224,7 @@ public class ReachingDefs {
         @Override
         public Set<Def> visitDeclStmt(DeclStmt declStmt) {
             // TODO: Revisit this
-            return Set.of();
+            return Set.of(new Def(declStmt.getIdent(), cfg.getNodeId(new Node.StmtNode(declStmt))));
         }
 
         @Override
